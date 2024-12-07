@@ -16,7 +16,7 @@ class Sweeper_game:
         self._status = False
         self._score = 0
         self._board = []
-        self._unrevelaed = 0
+        self._unrevealed = 0
 
     @property
     def rows(self):
@@ -36,7 +36,15 @@ class Sweeper_game:
     
     @property
     def score(self):
-        return self._score
+        return (self._score / (self._rows * self._cols - self._num_mines))
+    
+    def get_tile(self, row, col):
+        if row < 0 or row >= self._rows or col < 0 or col >= self._cols:
+            return -2
+        if self._board[row][col].revealed:
+            return self._board[row][col].value
+        else:
+            return -3
 
     def render(self, rows=None, cols=None, num_mines=None):
         self._rows = rows if rows is not None else self._rows
@@ -45,7 +53,7 @@ class Sweeper_game:
         self._status = True
         self._score = 0
         self._board = self.generate_board(rows, cols, num_mines)
-        self._unrevelaed = rows * cols - num_mines
+        self._unrevealed = rows * cols - num_mines
 
     def generate_board(self, rows, cols, mines):
         board = []
@@ -142,12 +150,12 @@ class Sweeper_game:
             else:
                 self._board[row, col].reveal()
                 self._score += 1
-                self._unrevelaed -= 1
+                self._unrevealed -= 1
 
-                if self._unrevelaed == 0:
+                if self._unrevealed == 0:
                     self._status = False
                     self.print_board()
-                    print(f'[:)] Congratulations, you won! Your score is: {str(self._score)}')
+                    print(f'[:)] Congratulations, you won! Your score is: {str(self._score / (self._rows * self._cols - self._num_mines))}')
 
                 return True
         elif action == self.ACTION.FLAG:
